@@ -11,33 +11,58 @@ public class Queue : MonoBehaviour
     public GameObject queueObject { get; private set;}
     public Queue<InactivePiece> pieceQueue { get; private set;}
     public Vector3Int queuePos;
-    public int queueSize;
+    public int queueDisplayCount;
 
     public void Initialize(Tilemap tilemap, TetrominoData[] data) {
         this.tilemap = tilemap;
         this.tetrominos = data;
         this.pieceQueue = new Queue<InactivePiece>();
         this.queueObject = new GameObject("Queue");
-        for (int i=0; i<this.queueSize; i++) {
-            int random = UnityEngine.Random.Range(0, this.tetrominos.Length);
+        // Generate two bags initially
+        GenerateBag();
+        GenerateBag();
+    }
+
+    public void GenerateBag() {
+        print("----GENERATING NEW BAG----");
+        List<int> bag = new List<int>();
+        for (int i=0; i<this.tetrominos.Length; i++) {
+            bag.Add(i);
+        }
+        bag = Shuffle(bag);
+        string debugString = "";
+        foreach (int n in bag) {
+            debugString += n + " ";
             InactivePiece piece = this.queueObject.AddComponent<InactivePiece>();
-            piece.Initialize(this.tetrominos[random]);
+            piece.Initialize(this.tetrominos[n]);
             this.pieceQueue.Enqueue(piece);
         }
+        print(debugString);
+    }
+
+    // Fisher-Yates Shuffle
+    public static List<int> Shuffle(List<int> list) {
+        int n = list.Count;
+        while (n > 1) {
+            n--;
+            int k = UnityEngine.Random.Range(0, n);
+            int value = list[k];
+            list[k] = list[n];
+            list[n] = value;
+        }
+        return list;
     }
 
     public void UpdateQueue() {
         Destroy(pieceQueue.Dequeue());
-        int random = UnityEngine.Random.Range(0, this.tetrominos.Length);
-        InactivePiece piece = this.queueObject.AddComponent<InactivePiece>();
-        piece.Initialize(this.tetrominos[random]);
-        this.pieceQueue.Enqueue(piece);
-        int i = 0;
-        foreach (InactivePiece qp in this.pieceQueue) {
-            Vector3Int pos = queuePos;
+        InactivePiece[] arr = this.pieceQueue.ToArray();
+        for (int i=0; i<this.queueDisplayCount; i++) {
+            Vector3Int pos = this.queuePos;
             pos.y -= i*3;
-            i++;
-            Set(qp, pos);
+            Set(arr[i], pos);
+        }
+        if (this.pieceQueue.Count <= 7) {
+            GenerateBag();
         }
     }
 
@@ -50,7 +75,7 @@ public class Queue : MonoBehaviour
 
     public void ClearQueueTiles() {
         InactivePiece[] arr = this.pieceQueue.ToArray();
-        for (int i=0; i<this.queueSize; i++) {
+        for (int i=0; i<this.queueDisplayCount; i++) {
             Vector3Int[] cells = arr[i].cells;
             for (int j=0; j<cells.Length; j++) {
                 Vector3Int pos = this.queuePos;
