@@ -18,7 +18,9 @@ public class Board : MonoBehaviour
     public RectInt Bounds {
         get {
             Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2);
-            return new RectInt(position, this.boardSize);
+            // Extend bounds by 1 tile at top of board to allow pieces to drop in from above bounds
+            Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y+1);
+            return new RectInt(position, playBounds);
         }
     }
 
@@ -41,9 +43,14 @@ public class Board : MonoBehaviour
     public void SpawnPiece() {
         this.queue.ClearQueueTiles();
         TetrominoData data = this.queue.pieceQueue.Peek().data;
-        this.activePiece.Initialize(this, this.spawnPos, data);
+        // Spawn I pieces one position lower
+        Vector3Int spawn = this.spawnPos;
+        if (data.tetromino == Tetromino.I) {
+            spawn.y--;
+        }
+        this.activePiece.Initialize(this, spawn, data);
 
-        if (!IsValidPosition(this.activePiece, this.spawnPos)) {
+        if (!IsValidPosition(this.activePiece, spawn)) {
             GameOver();
         }
 
@@ -58,7 +65,10 @@ public class Board : MonoBehaviour
     public void Set(Piece piece) {
         for (int i=0; i<piece.cells.Length; i++) {
             Vector3Int tilePosition = piece.cells[i] + piece.position;
-            this.tilemap.SetTile(tilePosition, piece.data.tile);
+            // Don't set tile if tilePosition is above board
+            if (tilePosition.y < this.boardSize.y/2) {
+                this.tilemap.SetTile(tilePosition, piece.data.tile);
+            }
         }
     }
 

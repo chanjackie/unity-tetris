@@ -60,7 +60,10 @@ public class Ghost : MonoBehaviour
     private void Set() {
         for (int i=0; i<this.cells.Length; i++) {
             Vector3Int tilePosition = this.cells[i] + this.position;
-            this.tilemap.SetTile(tilePosition, this.tile);
+            // Don't set tile if tilePosition is above board
+            if (tilePosition.y < this.board.boardSize.y/2) {
+                this.tilemap.SetTile(tilePosition, this.tile);
+            }
         }
     }
 }
