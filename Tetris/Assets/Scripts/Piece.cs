@@ -229,8 +229,7 @@ public class Piece : MonoBehaviour
         if (direction<0) {
             wallKickIndex--;
         }
-        Wrap(wallKickIndex, 0, this.data.wallKicks.GetLength(0));
-        return wallKickIndex;
+        return Wrap(wallKickIndex, 0, this.data.wallKicks.GetLength(0));
     }
 
     private int Wrap(int input, int min, int max) {
