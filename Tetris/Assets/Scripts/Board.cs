@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 
@@ -60,6 +61,8 @@ public class Board : MonoBehaviour
 
     private void GameOver() {
         this.tilemap.ClearAllTiles();
+        // Placeholder
+        SceneManager.LoadScene("Menu");
     }
 
     public void Set(Piece piece) {
