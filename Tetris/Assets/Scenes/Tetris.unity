@@ -1095,7 +1095,7 @@ MonoBehaviour:
     tile: {fileID: 11400000, guid: 21014cd7c69059f439d8a6ee1de88c35, type: 2}
   - tetromino: 6
     tile: {fileID: 11400000, guid: 7c6153884f672c044962d8e6dfd2aebe, type: 2}
-  spawnPos: {x: 0, y: 9, z: 0}
+  spawnPos: {x: -1, y: 9, z: 0}
   boardSize: {x: 10, y: 20}
   lockSound: {fileID: 1836828786}
   clearSound: {fileID: 1282524853}
