@@ -151,6 +151,7 @@ public class Piece : MonoBehaviour
     }
 
     private void Lock() {
+        this.board.lockSound.Play();
         this.swappedOnce = false;
         this.board.Set(this);
         this.board.ClearLines();

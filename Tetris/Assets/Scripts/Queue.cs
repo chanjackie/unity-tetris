@@ -24,7 +24,7 @@ public class Queue : MonoBehaviour
     }
 
     public void GenerateBag() {
-        print("----GENERATING NEW BAG----");
+        // print("----GENERATING NEW BAG----");
         List<int> bag = new List<int>();
         for (int i=0; i<this.tetrominos.Length; i++) {
             bag.Add(i);
@@ -37,7 +37,7 @@ public class Queue : MonoBehaviour
             piece.Initialize(this.tetrominos[n]);
             this.pieceQueue.Enqueue(piece);
         }
-        print(debugString);
+        // print(debugString);
     }
 
     // Fisher-Yates Shuffle

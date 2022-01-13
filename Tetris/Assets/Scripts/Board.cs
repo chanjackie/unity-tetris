@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 
@@ -12,8 +13,8 @@ public class Board : MonoBehaviour
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
     public Vector2Int boardSize = new Vector2Int(10, 20);
-
-    public int pieceQueueSize;
+    public AudioSource lockSound;
+    public AudioSource clearSound;
 
     public RectInt Bounds {
         get {
@@ -53,13 +54,13 @@ public class Board : MonoBehaviour
         if (!IsValidPosition(this.activePiece, spawn)) {
             GameOver();
         }
-
         Set(this.activePiece);
         this.queue.UpdateQueue();
     }
 
     private void GameOver() {
-        this.tilemap.ClearAllTiles();
+        // Placeholder
+        SceneManager.LoadScene("Menu");
     }
 
     public void Set(Piece piece) {
@@ -95,12 +96,17 @@ public class Board : MonoBehaviour
     public void ClearLines() {
         RectInt bounds = this.Bounds;
         int row = bounds.yMin;
+        bool lineCleared = false;
         while (row < bounds.yMax) {
             if (IsLineFull(row)) {
+                lineCleared = true;
                 LineClear(row);
             } else {
                 row++;
             }
+        }
+        if (lineCleared) {
+            this.clearSound.Play();
         }
     }
 
