@@ -5,8 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+
     // private void Start() {
-    //     StartCoroutine(LoadAsyncGame());
+        // StartCoroutine(LoadAsyncGame());
     // }
 
     // private IEnumerator LoadAsyncGame() {

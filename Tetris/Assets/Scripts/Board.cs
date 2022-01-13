@@ -59,7 +59,6 @@ public class Board : MonoBehaviour
     }
 
     private void GameOver() {
-        this.tilemap.ClearAllTiles();
         // Placeholder
         SceneManager.LoadScene("Menu");
     }
