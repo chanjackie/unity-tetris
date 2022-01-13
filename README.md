@@ -16,8 +16,10 @@ Most planned and currently implemented features will be modeled following the Te
 # Added Features
 - **Swap/Hold Feature**: A feature found commonly in modern Tetris games which allows players to save/swap the current tetromino into the hold space which can be switched out once per newly spawned tetromino.
 - **Upcoming Pieces Display**: A display which shows the player the next upcoming 4 tetrominos.
+- **Music and Sound Effects**: All music and sound effects were created by me in Bosca Ceoil: https://boscaceoil.net/
+- **Random Generator**: '7-bag Generator' as specified in the Tetris Guideline.
+- **Main Menu and Options Menu**: A main menu to welcome players and an options menu with volume controls
 
 # Planned Features
-- **Spawn Order**: Model the random generator to follow the Tetris Guideline: (https://tetris.fandom.com/wiki/Random_Generator)
-- **Game Menu with Customization/Options**
 - **Multiplayer**
+- **Scoring and Increasing Difficulty**
