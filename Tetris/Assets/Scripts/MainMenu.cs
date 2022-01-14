@@ -5,19 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    public Animator transition;
+    public float transitionTime = 1f;
 
-    // private void Start() {
-        // StartCoroutine(LoadAsyncGame());
-    // }
-
-    // private IEnumerator LoadAsyncGame() {
-    //     AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Tetris");
-    //     while (!asyncLoad.isDone) {
-    //         yield return null;
-    //     }
-    // }
     public void PlayGame() {
-        SceneManager.LoadScene("Tetris");
+        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex+1));
+    }
+
+    IEnumerator LoadScene(int sceneIndex) {
+        transition.SetTrigger("Start");
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene(sceneIndex);
     }
 
     public void QuitGame() {
