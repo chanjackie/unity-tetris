@@ -6,6 +6,7 @@ public class MenuSettings : MonoBehaviour
 {
     public AudioMixer bgmAudioMixer;
     public AudioMixer effectsAudioMixer;
+
     public void SetBGMVolume(float volume) {
         if (volume <= -30) {
             volume = -80;

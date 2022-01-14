@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 public class Board : MonoBehaviour
 {
@@ -13,8 +14,20 @@ public class Board : MonoBehaviour
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
     public Vector2Int boardSize = new Vector2Int(10, 20);
+    private int linesCleared;
+
+    public AudioSource BGM;
     public AudioSource lockSound;
     public AudioSource clearSound;
+    public AudioSource gameOverAudio;
+    public AudioClip nextBGM;
+
+    public Animator transition;
+    public Animator gameOverAnimator;
+    public float transitionTime = 1f;
+
+    public Text linesClearedText;
+    public int nextThreshold;
 
     public RectInt Bounds {
         get {
@@ -30,10 +43,12 @@ public class Board : MonoBehaviour
         this.activePiece = GetComponentInChildren<Piece>();
         this.queue = GetComponentInChildren<Queue>();
         this.hold = GetComponentInChildren<Hold>();
+        this.linesCleared = 0;
         for (int i=0; i<this.tetrominos.Length; i++) {
             this.tetrominos[i].Initialize();
         }
     }
+
 
     private void Start() {
         this.queue.Initialize(tilemap, tetrominos);
@@ -53,14 +68,26 @@ public class Board : MonoBehaviour
 
         if (!IsValidPosition(this.activePiece, spawn)) {
             GameOver();
+            return;
         }
         Set(this.activePiece);
         this.queue.UpdateQueue();
     }
 
     private void GameOver() {
+        this.BGM.Stop();
+        this.gameOverAudio.Play();
+        Destroy(this.activePiece);
         // Placeholder
-        SceneManager.LoadScene("Menu");
+        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+    }
+
+    IEnumerator LoadScene(int sceneIndex) {
+        gameOverAnimator.SetTrigger("Start");
+        yield return new WaitForSeconds(2);
+        transition.SetTrigger("Start");
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene(sceneIndex);
     }
 
     public void Set(Piece piece) {
@@ -100,10 +127,16 @@ public class Board : MonoBehaviour
         while (row < bounds.yMax) {
             if (IsLineFull(row)) {
                 lineCleared = true;
+                this.linesCleared++;
                 LineClear(row);
             } else {
                 row++;
             }
+        }
+        this.linesClearedText.text = this.linesCleared.ToString();
+        if (this.linesCleared >= this.nextThreshold && this.BGM.clip != this.nextBGM) {
+            this.BGM.clip = this.nextBGM;
+            this.BGM.Play();
         }
         if (lineCleared) {
             this.clearSound.Play();
