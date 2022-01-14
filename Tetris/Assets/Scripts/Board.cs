@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System;
 using System.Collections;
 
 public class Board : MonoBehaviour
@@ -14,7 +13,6 @@ public class Board : MonoBehaviour
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
     public Vector2Int boardSize = new Vector2Int(10, 20);
-    private int linesCleared;
 
     public AudioSource BGM;
     public AudioSource lockSound;
@@ -27,7 +25,16 @@ public class Board : MonoBehaviour
     public float transitionTime = 1f;
 
     public Text linesClearedText;
-    public int nextThreshold;
+    public Text scoreText;
+    public Text levelText;
+
+    public int totalLinesCleared { get; private set;}
+    public int level { get; private set;}
+    public long score { get; private set;}
+    public int comboCount { get; private set;}
+    public Data.ClearType lastClear { get; private set;}
+    // nextThreshold determines at which level the music will shift to the next BGM
+    public int nextBGMLevel;
 
     public RectInt Bounds {
         get {
@@ -43,7 +50,10 @@ public class Board : MonoBehaviour
         this.activePiece = GetComponentInChildren<Piece>();
         this.queue = GetComponentInChildren<Queue>();
         this.hold = GetComponentInChildren<Hold>();
-        this.linesCleared = 0;
+        this.totalLinesCleared = 0;
+        this.level = 0;
+        this.score = 0;
+        this.lastClear = Data.ClearType.NONE;
         for (int i=0; i<this.tetrominos.Length; i++) {
             this.tetrominos[i].Initialize();
         }
@@ -64,7 +74,7 @@ public class Board : MonoBehaviour
         if (data.tetromino == Tetromino.I) {
             spawn.y--;
         }
-        this.activePiece.Initialize(this, spawn, data);
+        this.activePiece.Initialize(this, spawn, data, this.level);
 
         if (!IsValidPosition(this.activePiece, spawn)) {
             GameOver();
@@ -123,24 +133,26 @@ public class Board : MonoBehaviour
     public void ClearLines() {
         RectInt bounds = this.Bounds;
         int row = bounds.yMin;
-        bool lineCleared = false;
+        int linesCleared = 0;
         while (row < bounds.yMax) {
             if (IsLineFull(row)) {
-                lineCleared = true;
-                this.linesCleared++;
+                linesCleared++;
+                this.totalLinesCleared++;
                 LineClear(row);
             } else {
                 row++;
             }
         }
-        this.linesClearedText.text = this.linesCleared.ToString();
-        if (this.linesCleared >= this.nextThreshold && this.BGM.clip != this.nextBGM) {
+        if (linesCleared > 0) {
+            this.clearSound.Play();
+        }
+        if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
             this.BGM.clip = this.nextBGM;
             this.BGM.Play();
         }
-        if (lineCleared) {
-            this.clearSound.Play();
-        }
+        this.level = this.totalLinesCleared/10;
+        CalculateScore(linesCleared);
+        UpdateText();
     }
 
     public bool IsLineFull(int row) {
@@ -177,9 +189,37 @@ public class Board : MonoBehaviour
         if (swappedData.cells == null) {
             SpawnPiece();
         } else {
-            this.activePiece.Initialize(this, this.spawnPos, swappedData);
+            this.activePiece.Initialize(this, this.spawnPos, swappedData, this.level);
             Set(this.activePiece);
         }
+    }
+
+    public void UpdateScore(int addedScore) {
+        this.score += addedScore;
+        this.scoreText.text = this.score.ToString();
+    }
+
+    // TODO: implement support for T-Spin scoring, scoring for soft/hard drops
+    private void CalculateScore(int linesCleared) {
+        Data.ClearType clearType = Data.LinesToClearType[linesCleared];
+        if (clearType == Data.ClearType.NONE) {
+            this.lastClear = clearType;
+            this.comboCount = 0;
+            return;
+        }
+        int addedScore = Data.Scores[clearType]*(level+1);
+        if (Data.DifficultClears.Contains(clearType) && Data.DifficultClears.Contains(this.lastClear)) {
+            addedScore = addedScore*3/2;
+        }
+        addedScore += 50*this.comboCount*(level+1);
+        this.comboCount++;
+        this.lastClear = clearType;
+        UpdateScore(addedScore);
+    }
+
+    private void UpdateText() {
+        this.linesClearedText.text = this.totalLinesCleared.ToString();
+        this.levelText.text = this.level.ToString();
     }
 
 }

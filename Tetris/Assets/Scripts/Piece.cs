@@ -13,10 +13,10 @@ public class Piece : MonoBehaviour
     public bool leftFast { get; private set;}
     public bool rightFast { get; private set;}
 
-    public float stepDelay = 1f;
-    public float lockDelay = 0.25f;
-    public float holdDelay = 0.2f;
-    public float moveFastDelay = 0.05f;
+    private float stepDelay;
+    private float lockDelay = 0.25f;
+    private float holdKeyDelay = 0.2f;
+    private float moveFastDelay = 0.025f;
 
     private float stepTime;
     private float lockTime;
@@ -28,11 +28,12 @@ public class Piece : MonoBehaviour
     private float dropFastTime;
     private float leftFastTime;
     private float rightFastTime;
-    public void Initialize(Board board, Vector3Int position, TetrominoData data) {
+    public void Initialize(Board board, Vector3Int position, TetrominoData data, int level) {
         this.board = board;
         this.position = position;
         this.data = data;
         this.rotationIndex = 0;
+        this.stepDelay = Data.DropSpeeds[level];
         this.stepTime = Time.time + this.stepDelay;
         this.lockTime = 0f;
         this.dropHoldTime = this.leftHoldTime = this.rightHoldTime = 0f;
@@ -70,7 +71,9 @@ public class Piece : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
-            Move(Vector2Int.down);
+            if (Move(Vector2Int.down)) {
+                this.board.UpdateScore(1);
+            }
         }
 
         CheckHeldKeys();
@@ -78,7 +81,9 @@ public class Piece : MonoBehaviour
         if (this.dropFast) {
             this.dropFastTime += Time.deltaTime;
             if (this.dropFastTime >= this.moveFastDelay) {
-                Move(Vector2Int.down);
+                if (Move(Vector2Int.down)) {
+                    this.board.UpdateScore(1);
+                }
                 this.dropFastTime = 0f;
             }
         }
@@ -113,7 +118,7 @@ public class Piece : MonoBehaviour
     private void CheckHeldKeys() {
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
             this.dropHoldTime += Time.deltaTime;
-            if (this.dropHoldTime >= this.holdDelay) {
+            if (this.dropHoldTime >= this.holdKeyDelay) {
                 this.dropFast = true;
             }
         } else {
@@ -122,7 +127,7 @@ public class Piece : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
             this.leftHoldTime += Time.deltaTime;
-            if (this.leftHoldTime >= this.holdDelay) {
+            if (this.leftHoldTime >= this.holdKeyDelay) {
                 this.leftFast = true;
             }
         } else {
@@ -131,7 +136,7 @@ public class Piece : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
             this.rightHoldTime += Time.deltaTime;
-            if (this.rightHoldTime >= this.holdDelay) {
+            if (this.rightHoldTime >= this.holdKeyDelay) {
                 this.rightFast = true;
             }
         } else {
@@ -160,6 +165,7 @@ public class Piece : MonoBehaviour
 
     private void HardDrop() {
         while (Move(Vector2Int.down)) {
+            this.board.UpdateScore(2);
             continue;
         }
         Lock();
