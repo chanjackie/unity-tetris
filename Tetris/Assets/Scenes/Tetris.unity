@@ -260,6 +260,7 @@ GameObject:
   m_Component:
   - component: {fileID: 17679669}
   - component: {fileID: 17679668}
+  - component: {fileID: 17679670}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -327,11 +328,26 @@ Transform:
   m_GameObject: {fileID: 17679667}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &17679670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 17679667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd03e62e3fd704429b969d4e3925b6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgrounds:
+  - {fileID: 21300000, guid: 7f598344a4e40494ba21146164560944, type: 3}
+  - {fileID: 21300000, guid: 20b4e13f80eaf5e43b28bd4f4ee54283, type: 3}
 --- !u!1 &174916182
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +524,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: b4ad6dd22610f7c4ba7a36ddb23fb588, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.9647059}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.84313726}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
@@ -530,7 +546,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &232019621
 GameObject:
@@ -1500,7 +1516,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 88f49d978f5581641a22f482040dd4c0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 28c703a285e822641b4d790ccb16d63a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.9647059}
   m_FlipX: 0
   m_FlipY: 0
@@ -2069,7 +2085,7 @@ MonoBehaviour:
   linesClearedText: {fileID: 1242252506}
   scoreText: {fileID: 1006024039}
   levelText: {fileID: 585317163}
-  nextBGMLevel: 10
+  nextBGMLevel: 1
 --- !u!156049354 &1679330058
 Grid:
   m_ObjectHideFlags: 0
@@ -2457,7 +2473,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 10
-  m_Sprite: {fileID: 21300000, guid: 500247121f184ba4fb83572cb321296c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3309c2738d291a6438485e7f6fc2d3eb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

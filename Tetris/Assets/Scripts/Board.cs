@@ -146,11 +146,11 @@ public class Board : MonoBehaviour
         if (linesCleared > 0) {
             this.effectSource.PlayOneShot(this.clearClip);
         }
+        this.level = this.totalLinesCleared/10;
         if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
             this.BGM.clip = this.nextBGM;
             this.BGM.Play();
         }
-        this.level = this.totalLinesCleared/10;
         CalculateScore(linesCleared);
         UpdateText();
     }
