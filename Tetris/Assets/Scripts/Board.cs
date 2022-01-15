@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 using System.Collections;
 
 public class Board : MonoBehaviour
@@ -12,13 +13,16 @@ public class Board : MonoBehaviour
     public Piece activePiece { get; private set;}
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
-    public Vector2Int boardSize = new Vector2Int(10, 20);
+    public Vector2Int boardSize = new Vector2Int(10, 22);
 
     public AudioSource BGM;
-    public AudioSource lockSound;
-    public AudioSource clearSound;
+    public AudioSource effectSource;
     public AudioSource gameOverAudio;
+    public AudioSource comboSource;
     public AudioClip nextBGM;
+    public AudioClip lockClip;
+    public AudioClip clearClip;
+    public AudioClip moveClip;
 
     public Animator transition;
     public Animator gameOverAnimator;
@@ -38,8 +42,7 @@ public class Board : MonoBehaviour
 
     public RectInt Bounds {
         get {
-            Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2);
-            // Extend bounds by 1 tile at top of board to allow pieces to drop in from above bounds
+            Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2+1);
             Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y+1);
             return new RectInt(position, playBounds);
         }
@@ -103,10 +106,7 @@ public class Board : MonoBehaviour
     public void Set(Piece piece) {
         for (int i=0; i<piece.cells.Length; i++) {
             Vector3Int tilePosition = piece.cells[i] + piece.position;
-            // Don't set tile if tilePosition is above board
-            if (tilePosition.y < this.boardSize.y/2) {
-                this.tilemap.SetTile(tilePosition, piece.data.tile);
-            }
+            this.tilemap.SetTile(tilePosition, piece.data.tile);
         }
     }
 
@@ -144,7 +144,7 @@ public class Board : MonoBehaviour
             }
         }
         if (linesCleared > 0) {
-            this.clearSound.Play();
+            this.effectSource.PlayOneShot(this.clearClip);
         }
         if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
             this.BGM.clip = this.nextBGM;
@@ -203,7 +203,6 @@ public class Board : MonoBehaviour
     private void CalculateScore(int linesCleared) {
         Data.ClearType clearType = Data.LinesToClearType[linesCleared];
         if (clearType == Data.ClearType.NONE) {
-            this.lastClear = clearType;
             this.comboCount = 0;
             return;
         }
@@ -215,6 +214,12 @@ public class Board : MonoBehaviour
         this.comboCount++;
         this.lastClear = clearType;
         UpdateScore(addedScore);
+        if (this.comboCount > 1) {
+            this.comboSource.pitch = 1;
+            float currentPitch = this.comboSource.pitch;
+            this.comboSource.pitch = currentPitch*Mathf.Pow(1.05946f, (this.comboCount-2));
+            this.comboSource.Play();
+        }
     }
 
     private void UpdateText() {

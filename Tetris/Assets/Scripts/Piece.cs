@@ -65,9 +65,13 @@ public class Piece : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
-            Move(Vector2Int.left);
+            if (Move(Vector2Int.left)) {
+                this.board.effectSource.PlayOneShot(this.board.moveClip);
+            }
         } else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
-            Move(Vector2Int.right);
+            if (Move(Vector2Int.right)) {
+                this.board.effectSource.PlayOneShot(this.board.moveClip);
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
@@ -91,7 +95,9 @@ public class Piece : MonoBehaviour
         if (this.leftFast) {
             this.leftFastTime += Time.deltaTime;
             if (this.leftFastTime >= this.moveFastDelay) {
-                Move(Vector2Int.left);
+                if (Move(Vector2Int.left)) {
+                    this.board.effectSource.PlayOneShot(this.board.moveClip);
+                }
                 this.leftFastTime = 0f;
             }
         }
@@ -99,7 +105,9 @@ public class Piece : MonoBehaviour
         if (this.rightFast) {
             this.rightFastTime += Time.deltaTime;
             if (this.rightFastTime >= this.moveFastDelay) {
-                Move(Vector2Int.right);
+                if (Move(Vector2Int.right)) {
+                    this.board.effectSource.PlayOneShot(this.board.moveClip);
+                }
                 this.rightFastTime = 0f;
             }
         }
@@ -156,7 +164,7 @@ public class Piece : MonoBehaviour
     }
 
     private void Lock() {
-        this.board.lockSound.Play();
+        this.board.effectSource.PlayOneShot(this.board.lockClip);
         this.swappedOnce = false;
         this.board.Set(this);
         this.board.ClearLines();
