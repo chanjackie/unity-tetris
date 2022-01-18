@@ -308,7 +308,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 7f598344a4e40494ba21146164560944, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c75692b855c057b41adbae71718d7dd7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -348,6 +348,7 @@ MonoBehaviour:
   backgrounds:
   - {fileID: 21300000, guid: 7f598344a4e40494ba21146164560944, type: 3}
   - {fileID: 21300000, guid: 20b4e13f80eaf5e43b28bd4f4ee54283, type: 3}
+  - {fileID: 21300000, guid: c75692b855c057b41adbae71718d7dd7, type: 3}
 --- !u!1 &174916182
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,7 +2086,7 @@ MonoBehaviour:
   linesClearedText: {fileID: 1242252506}
   scoreText: {fileID: 1006024039}
   levelText: {fileID: 585317163}
-  nextBGMLevel: 1
+  nextBGMLevel: 10
 --- !u!156049354 &1679330058
 Grid:
   m_ObjectHideFlags: 0
