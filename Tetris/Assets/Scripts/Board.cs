@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using System.Collections;
+using TMPro;
 
 public class Board : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class Board : MonoBehaviour
     public Piece activePiece { get; private set;}
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
-    public Vector2Int boardSize = new Vector2Int(10, 22);
+    public Vector2Int boardSize = new Vector2Int(10, 20);
+    public BoardUI boardUI { get; private set;}
 
     public AudioSource BGM;
     public AudioSource effectSource;
@@ -23,14 +25,6 @@ public class Board : MonoBehaviour
     public AudioClip lockClip;
     public AudioClip clearClip;
     public AudioClip moveClip;
-
-    public Animator transition;
-    public Animator gameOverAnimator;
-    public float transitionTime = 1f;
-
-    public Text linesClearedText;
-    public Text scoreText;
-    public Text levelText;
 
     public int totalLinesCleared { get; private set;}
     public int level { get; private set;}
@@ -43,7 +37,7 @@ public class Board : MonoBehaviour
     public RectInt Bounds {
         get {
             Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2+1);
-            Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y+1);
+            Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y);
             return new RectInt(position, playBounds);
         }
     }
@@ -53,6 +47,7 @@ public class Board : MonoBehaviour
         this.activePiece = GetComponentInChildren<Piece>();
         this.queue = GetComponentInChildren<Queue>();
         this.hold = GetComponentInChildren<Hold>();
+        this.boardUI = GetComponentInChildren<BoardUI>();
         this.totalLinesCleared = 0;
         this.level = 0;
         this.score = 0;
@@ -87,22 +82,24 @@ public class Board : MonoBehaviour
         this.queue.UpdateQueue();
     }
 
-    private void GameOver() {
+    public void GameOver() {
         this.BGM.Stop();
         this.gameOverAudio.Play();
         Destroy(this.activePiece);
         // Placeholder
-        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+        StartCoroutine(this.boardUI.LoadScene(SceneManager.GetActiveScene().buildIndex-1));
     }
 
-    IEnumerator LoadScene(int sceneIndex) {
-        gameOverAnimator.SetTrigger("Start");
-        yield return new WaitForSeconds(2);
-        transition.SetTrigger("Start");
-        yield return new WaitForSeconds(1);
-        SceneManager.LoadScene(sceneIndex);
+    public bool LockOutOfBounds(Piece piece) {
+        for (int i=0; i<piece.cells.Length; i++) {
+            Vector3Int tilePosition = piece.cells[i] + piece.position;
+            if (tilePosition.y < this.Bounds.yMax-2) {
+                return false;
+            }
+        }
+        return true;
     }
-
+    
     public void Set(Piece piece) {
         for (int i=0; i<piece.cells.Length; i++) {
             Vector3Int tilePosition = piece.cells[i] + piece.position;
@@ -145,14 +142,15 @@ public class Board : MonoBehaviour
         }
         if (linesCleared > 0) {
             this.effectSource.PlayOneShot(this.clearClip);
+            this.level = this.totalLinesCleared/10;
+            if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
+                this.BGM.clip = this.nextBGM;
+                this.BGM.Play();
+            }
+            CalculateScore(linesCleared);
+        } else {
+            this.comboCount = 0;
         }
-        this.level = this.totalLinesCleared/10;
-        if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
-            this.BGM.clip = this.nextBGM;
-            this.BGM.Play();
-        }
-        CalculateScore(linesCleared);
-        UpdateText();
     }
 
     public bool IsLineFull(int row) {
@@ -194,9 +192,9 @@ public class Board : MonoBehaviour
         }
     }
 
-    public void UpdateScore(int addedScore) {
+    public void AddScore(int addedScore) {
         this.score += addedScore;
-        this.scoreText.text = this.score.ToString();
+        this.boardUI.UpdateScoreUI(this.score);
     }
 
     // TODO: implement support for T-Spin scoring, scoring for soft/hard drops
@@ -213,18 +211,14 @@ public class Board : MonoBehaviour
         addedScore += 50*this.comboCount*(level+1);
         this.comboCount++;
         this.lastClear = clearType;
-        UpdateScore(addedScore);
+        AddScore(addedScore);
         if (this.comboCount > 1) {
             this.comboSource.pitch = 1;
             float currentPitch = this.comboSource.pitch;
             this.comboSource.pitch = currentPitch*Mathf.Pow(1.05946f, (this.comboCount-2));
             this.comboSource.Play();
         }
-    }
-
-    private void UpdateText() {
-        this.linesClearedText.text = this.totalLinesCleared.ToString();
-        this.levelText.text = this.level.ToString();
+        this.boardUI.UpdateUI(clearType, this.totalLinesCleared, this.level);
     }
 
 }

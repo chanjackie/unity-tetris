@@ -76,7 +76,7 @@ public class Piece : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
             if (Move(Vector2Int.down)) {
-                this.board.UpdateScore(1);
+                this.board.AddScore(1);
             }
         }
 
@@ -86,7 +86,7 @@ public class Piece : MonoBehaviour
             this.dropFastTime += Time.deltaTime;
             if (this.dropFastTime >= this.moveFastDelay) {
                 if (Move(Vector2Int.down)) {
-                    this.board.UpdateScore(1);
+                    this.board.AddScore(1);
                 }
                 this.dropFastTime = 0f;
             }
@@ -167,13 +167,17 @@ public class Piece : MonoBehaviour
         this.board.effectSource.PlayOneShot(this.board.lockClip);
         this.swappedOnce = false;
         this.board.Set(this);
+        if (this.board.LockOutOfBounds(this)) {
+            this.board.GameOver();
+            return;
+        }
         this.board.ClearLines();
         this.board.SpawnPiece();
     }
 
     private void HardDrop() {
         while (Move(Vector2Int.down)) {
-            this.board.UpdateScore(2);
+            this.board.AddScore(2);
             continue;
         }
         Lock();
@@ -194,14 +198,12 @@ public class Piece : MonoBehaviour
 
     private void Rotate(int direction) {
         int currentRotation = this.rotationIndex;
-        this.rotationIndex = Wrap(this.rotationIndex+direction, 0, 4);
-        
         ApplyRotationMatrix(direction);
-
         if (!TestWallKicks(this.rotationIndex, direction)) {
             this.rotationIndex = currentRotation;
             ApplyRotationMatrix(-direction);
         }
+        this.rotationIndex = Wrap(this.rotationIndex+direction, 0, 4);
     }
 
     private void ApplyRotationMatrix(int direction) {
@@ -228,7 +230,6 @@ public class Piece : MonoBehaviour
 
     private bool TestWallKicks(int rotationIndex, int direction) {
         int wallKickIndex = GetWallKickIndex(rotationIndex, direction);
-
         for (int i=0; i<this.data.wallKicks.GetLength(1); i++) {
             Vector2Int translation = this.data.wallKicks[wallKickIndex, i];
             if (Move(translation)) {
