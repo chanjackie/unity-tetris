@@ -87,7 +87,7 @@ public class Board : MonoBehaviour
         this.gameOverAudio.Play();
         Destroy(this.activePiece);
         // Placeholder
-        StartCoroutine(this.boardUI.LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+        StartCoroutine(this.boardUI.LoadGameOverUI());
     }
 
     public bool LockOutOfBounds(Piece piece) {
@@ -209,16 +209,16 @@ public class Board : MonoBehaviour
             addedScore = addedScore*3/2;
         }
         addedScore += 50*this.comboCount*(level+1);
-        this.comboCount++;
         this.lastClear = clearType;
         AddScore(addedScore);
-        if (this.comboCount > 1) {
+        if (this.comboCount >= 1) {
             this.comboSource.pitch = 1;
             float currentPitch = this.comboSource.pitch;
-            this.comboSource.pitch = currentPitch*Mathf.Pow(1.05946f, (this.comboCount-2));
+            this.comboSource.pitch = currentPitch*Mathf.Pow(1.05946f, (this.comboCount-1));
             this.comboSource.Play();
         }
-        this.boardUI.UpdateUI(clearType, this.totalLinesCleared, this.level);
+        this.boardUI.UpdateUI(clearType, this.totalLinesCleared, this.level, this.comboCount);
+        this.comboCount++;
     }
 
 }

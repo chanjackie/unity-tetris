@@ -33,6 +33,9 @@ public class Piece : MonoBehaviour
         this.position = position;
         this.data = data;
         this.rotationIndex = 0;
+        if (level > 29) {
+            level = 29;
+        }
         this.stepDelay = Data.DropSpeeds[level];
         this.stepTime = Time.time + this.stepDelay;
         this.lockTime = 0f;

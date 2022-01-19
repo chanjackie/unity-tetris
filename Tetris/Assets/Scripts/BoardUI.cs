@@ -15,28 +15,55 @@ public class BoardUI : MonoBehaviour
     public Text linesClearedText;
     public Text scoreText;
     public Text levelText;
+    public TMP_Text finalScoreText;
     public TMP_Text clearText;
+    public TMP_Text comboText;
     public VertexGradient yellowToOrange;
     public VertexGradient blueToPurple;
 
+    public Button retryButton;
+    public Button quitButton;
+
     public ParticleSystem pS;
 
-    public IEnumerator LoadScene(int sceneIndex) {
+    public IEnumerator LoadGameOverUI() {
         gameOverAnimator.SetTrigger("Start");
         yield return new WaitForSeconds(2);
         transition.SetTrigger("Start");
+        yield return new WaitForSeconds(1);
+        retryButton.gameObject.SetActive(true);
+        quitButton.gameObject.SetActive(true);
+    }
+
+    public void Quit() {
+        gameOverAnimator.SetTrigger("QuitPressed");
+        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+    }
+
+    public void Retry() {
+        gameOverAnimator.SetTrigger("RetryPressed");
+        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex));
+    }
+
+    public IEnumerator LoadScene(int sceneIndex) {
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene(sceneIndex);
     }
 
     public void UpdateScoreUI(long score) {
         this.scoreText.text = score.ToString();
+        this.finalScoreText.text = score.ToString();
     }
 
-    public void UpdateUI(Data.ClearType clearType, int linesCleared, int level) {
+    public void UpdateUI(Data.ClearType clearType, int linesCleared, int level, int comboCount) {
         this.linesClearedText.text = linesCleared.ToString();
         this.levelText.text = level.ToString();
         this.clearText.text = clearType.ToString();
+        if (comboCount >= 1) {
+            this.comboText.text = comboCount.ToString() + " COMBO";
+        } else {
+            this.comboText.text = "";
+        }
         ParticleSystem.EmissionModule em = this.pS.emission;
         ParticleSystem.Burst burst = new ParticleSystem.Burst(0.0f, 30);
         ParticleSystem.MainModule main = this.pS.main;
@@ -75,6 +102,7 @@ public class BoardUI : MonoBehaviour
                 burst.count = 30;
                 break;
         }
+
         em.SetBurst(0, burst);
         this.pS.Play(true);
         this.clearDisplayAnimator.SetTrigger("Display");

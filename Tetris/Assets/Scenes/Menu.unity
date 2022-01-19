@@ -206,15 +206,15 @@ MonoBehaviour:
   m_FillRect: {fileID: 1388580221}
   m_HandleRect: {fileID: 718925091}
   m_Direction: 0
-  m_MinValue: -30
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 224782420}
-        m_TargetAssemblyTypeName: MenuSettings, Assembly-CSharp
+      - m_Target: {fileID: 1690708704}
+        m_TargetAssemblyTypeName: OptionsMenu, Assembly-CSharp
         m_MethodName: SetEffectsVolume
         m_Mode: 0
         m_Arguments:
@@ -487,7 +487,6 @@ GameObject:
   - component: {fileID: 224782418}
   - component: {fileID: 224782417}
   - component: {fileID: 224782416}
-  - component: {fileID: 224782420}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -544,8 +543,8 @@ Canvas:
   m_GameObject: {fileID: 224782415}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 955381557}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -580,20 +579,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &224782420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 224782415}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5aec06bf160df1543986c344e42ad79c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bgmAudioMixer: {fileID: 24100000, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
-  effectsAudioMixer: {fileID: 24100000, guid: f323447e29344f64fb0e87fb2599c013, type: 2}
 --- !u!1 &287452760
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,7 +660,7 @@ AudioSource:
   m_GameObject: {fileID: 322016293}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: f323447e29344f64fb0e87fb2599c013, type: 2}
+  OutputAudioMixerGroup: {fileID: 6550855177272113419, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
   m_audioClip: {fileID: 8300000, guid: cc46f410f87c3fc4ab80d603be74e748, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -796,7 +781,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -22.05, y: -44.84}
+  m_AnchoredPosition: {x: -22.050003, y: -44.839996}
   m_SizeDelta: {x: 155.9, y: -60.6803}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &404445820
@@ -1139,7 +1124,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.0000019073486}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &563160484
@@ -1189,12 +1174,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 35.25
+  m_fontSize: 39
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 40
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1225,7 +1210,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 9.08548, z: 0, w: 0}
+  m_margin: {x: 0, y: 5.288368, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1534,7 +1519,7 @@ AudioSource:
   m_GameObject: {fileID: 758306425}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
+  OutputAudioMixerGroup: {fileID: 4266301069639011823, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
   m_audioClip: {fileID: 8300000, guid: cb075c659ae39c740bbf477d56f39ccd, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -2751,15 +2736,15 @@ MonoBehaviour:
   m_FillRect: {fileID: 851658758}
   m_HandleRect: {fileID: 1457403458}
   m_Direction: 0
-  m_MinValue: -30
-  m_MaxValue: 0
+  m_MinValue: 0
+  m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 224782420}
-        m_TargetAssemblyTypeName: MenuSettings, Assembly-CSharp
+      - m_Target: {fileID: 1690708704}
+        m_TargetAssemblyTypeName: OptionsMenu, Assembly-CSharp
         m_MethodName: SetBGMVolume
         m_Mode: 0
         m_Arguments:
@@ -2901,8 +2886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bgmSlider: {fileID: 1455093000}
   effectsSlider: {fileID: 12397816}
-  bgmMixer: {fileID: 24100000, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
-  effectsMixer: {fileID: 24100000, guid: f323447e29344f64fb0e87fb2599c013, type: 2}
+  masterAudioMixer: {fileID: 24100000, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
 --- !u!95 &1755735802 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 6698974968014017734, guid: c976211038244d446b927c11d07845b2, type: 3}
@@ -2958,7 +2942,7 @@ AudioSource:
   m_GameObject: {fileID: 1771128125}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 24300002, guid: f323447e29344f64fb0e87fb2599c013, type: 2}
+  OutputAudioMixerGroup: {fileID: 6550855177272113419, guid: 5e9013b4ae8c79a44be8693e3ed3f7f4, type: 2}
   m_audioClip: {fileID: 8300000, guid: 413fee5314950ed4b9fd20b9caf804a0, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -3254,7 +3238,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -57.592, y: 51.7}
+  m_AnchoredPosition: {x: -57.591995, y: 51.7}
   m_SizeDelta: {x: 84.8163, y: -60.6802}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1946959825
