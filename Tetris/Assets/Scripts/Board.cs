@@ -2,8 +2,9 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System;
+using UnityEngine.Audio;
 using System.Collections;
+using TMPro;
 
 public class Board : MonoBehaviour
 {
@@ -14,26 +15,29 @@ public class Board : MonoBehaviour
     public TetrominoData[] tetrominos;
     public Vector3Int spawnPos;
     public Vector2Int boardSize = new Vector2Int(10, 20);
-    private int linesCleared;
+    public BoardUI boardUI { get; private set;}
 
     public AudioSource BGM;
-    public AudioSource lockSound;
-    public AudioSource clearSound;
+    public AudioSource effectSource;
     public AudioSource gameOverAudio;
+    public AudioSource comboSource;
     public AudioClip nextBGM;
+    public AudioClip lockClip;
+    public AudioClip clearClip;
+    public AudioClip moveClip;
 
-    public Animator transition;
-    public Animator gameOverAnimator;
-    public float transitionTime = 1f;
-
-    public Text linesClearedText;
-    public int nextThreshold;
+    public int totalLinesCleared { get; private set;}
+    public int level { get; private set;}
+    public long score { get; private set;}
+    public int comboCount { get; private set;}
+    public Data.ClearType lastClear { get; private set;}
+    // nextThreshold determines at which level the music will shift to the next BGM
+    public int nextBGMLevel;
 
     public RectInt Bounds {
         get {
-            Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2);
-            // Extend bounds by 1 tile at top of board to allow pieces to drop in from above bounds
-            Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y+1);
+            Vector2Int position = new Vector2Int(-this.boardSize.x/2, -this.boardSize.y/2+1);
+            Vector2Int playBounds = new Vector2Int(this.boardSize.x, this.boardSize.y);
             return new RectInt(position, playBounds);
         }
     }
@@ -43,7 +47,11 @@ public class Board : MonoBehaviour
         this.activePiece = GetComponentInChildren<Piece>();
         this.queue = GetComponentInChildren<Queue>();
         this.hold = GetComponentInChildren<Hold>();
-        this.linesCleared = 0;
+        this.boardUI = GetComponentInChildren<BoardUI>();
+        this.totalLinesCleared = 0;
+        this.level = 0;
+        this.score = 0;
+        this.lastClear = Data.ClearType.NONE;
         for (int i=0; i<this.tetrominos.Length; i++) {
             this.tetrominos[i].Initialize();
         }
@@ -64,7 +72,7 @@ public class Board : MonoBehaviour
         if (data.tetromino == Tetromino.I) {
             spawn.y--;
         }
-        this.activePiece.Initialize(this, spawn, data);
+        this.activePiece.Initialize(this, spawn, data, this.level);
 
         if (!IsValidPosition(this.activePiece, spawn)) {
             GameOver();
@@ -74,29 +82,28 @@ public class Board : MonoBehaviour
         this.queue.UpdateQueue();
     }
 
-    private void GameOver() {
+    public void GameOver() {
         this.BGM.Stop();
         this.gameOverAudio.Play();
         Destroy(this.activePiece);
         // Placeholder
-        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+        StartCoroutine(this.boardUI.LoadGameOverUI());
     }
 
-    IEnumerator LoadScene(int sceneIndex) {
-        gameOverAnimator.SetTrigger("Start");
-        yield return new WaitForSeconds(2);
-        transition.SetTrigger("Start");
-        yield return new WaitForSeconds(1);
-        SceneManager.LoadScene(sceneIndex);
+    public bool LockOutOfBounds(Piece piece) {
+        for (int i=0; i<piece.cells.Length; i++) {
+            Vector3Int tilePosition = piece.cells[i] + piece.position;
+            if (tilePosition.y < this.Bounds.yMax-2) {
+                return false;
+            }
+        }
+        return true;
     }
-
+    
     public void Set(Piece piece) {
         for (int i=0; i<piece.cells.Length; i++) {
             Vector3Int tilePosition = piece.cells[i] + piece.position;
-            // Don't set tile if tilePosition is above board
-            if (tilePosition.y < this.boardSize.y/2) {
-                this.tilemap.SetTile(tilePosition, piece.data.tile);
-            }
+            this.tilemap.SetTile(tilePosition, piece.data.tile);
         }
     }
 
@@ -123,23 +130,26 @@ public class Board : MonoBehaviour
     public void ClearLines() {
         RectInt bounds = this.Bounds;
         int row = bounds.yMin;
-        bool lineCleared = false;
+        int linesCleared = 0;
         while (row < bounds.yMax) {
             if (IsLineFull(row)) {
-                lineCleared = true;
-                this.linesCleared++;
+                linesCleared++;
+                this.totalLinesCleared++;
                 LineClear(row);
             } else {
                 row++;
             }
         }
-        this.linesClearedText.text = this.linesCleared.ToString();
-        if (this.linesCleared >= this.nextThreshold && this.BGM.clip != this.nextBGM) {
-            this.BGM.clip = this.nextBGM;
-            this.BGM.Play();
-        }
-        if (lineCleared) {
-            this.clearSound.Play();
+        if (linesCleared > 0) {
+            this.effectSource.PlayOneShot(this.clearClip);
+            this.level = this.totalLinesCleared/10;
+            if (this.BGM.clip != this.nextBGM && this.level >= this.nextBGMLevel) {
+                this.BGM.clip = this.nextBGM;
+                this.BGM.Play();
+            }
+            CalculateScore(linesCleared);
+        } else {
+            this.comboCount = 0;
         }
     }
 
@@ -177,9 +187,38 @@ public class Board : MonoBehaviour
         if (swappedData.cells == null) {
             SpawnPiece();
         } else {
-            this.activePiece.Initialize(this, this.spawnPos, swappedData);
+            this.activePiece.Initialize(this, this.spawnPos, swappedData, this.level);
             Set(this.activePiece);
         }
+    }
+
+    public void AddScore(int addedScore) {
+        this.score += addedScore;
+        this.boardUI.UpdateScoreUI(this.score);
+    }
+
+    // TODO: implement support for T-Spin scoring, scoring for soft/hard drops
+    private void CalculateScore(int linesCleared) {
+        Data.ClearType clearType = Data.LinesToClearType[linesCleared];
+        if (clearType == Data.ClearType.NONE) {
+            this.comboCount = 0;
+            return;
+        }
+        int addedScore = Data.Scores[clearType]*(level+1);
+        if (Data.DifficultClears.Contains(clearType) && Data.DifficultClears.Contains(this.lastClear)) {
+            addedScore = addedScore*3/2;
+        }
+        addedScore += 50*this.comboCount*(level+1);
+        this.lastClear = clearType;
+        AddScore(addedScore);
+        if (this.comboCount >= 1) {
+            this.comboSource.pitch = 1;
+            float currentPitch = this.comboSource.pitch;
+            this.comboSource.pitch = currentPitch*Mathf.Pow(1.05946f, (this.comboCount-1));
+            this.comboSource.Play();
+        }
+        this.boardUI.UpdateUI(clearType, this.totalLinesCleared, this.level, this.comboCount);
+        this.comboCount++;
     }
 
 }
