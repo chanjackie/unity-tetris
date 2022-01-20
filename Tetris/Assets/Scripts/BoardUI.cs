@@ -75,7 +75,7 @@ public class BoardUI : MonoBehaviour
                 this.clearText.enableVertexGradient = true;
                 this.clearText.color = Color.yellow;
                 this.clearText.colorGradient = this.yellowToOrange;
-                burst.count = 60;
+                burst.count = 75;
                 Color orange = new Color(1.0f, 0.4f, 0.0f);
                 main.startColor = new ParticleSystem.MinMaxGradient(Color.yellow, orange);
                 break;

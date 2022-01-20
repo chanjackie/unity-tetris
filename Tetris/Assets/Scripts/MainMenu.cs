@@ -2,13 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     public Animator transition;
-    public float transitionTime = 1f;
 
-    public void PlayGame() {
+    public void HostGame() {
+        print("HOST!");
+    }
+
+    public void JoinGame() {
+        print("JOIN!");
+    }
+
+    public void PlaySolo() {
         StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex+1));
     }
 
@@ -17,7 +25,6 @@ public class MainMenu : MonoBehaviour
         yield return new WaitForSeconds(1);
         SceneManager.LoadScene(sceneIndex);
     }
-
     public void QuitGame() {
         print("QUIT!");
         Application.Quit();
