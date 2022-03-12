@@ -37,7 +37,7 @@ public class BoardUI : MonoBehaviour
 
     public void Quit() {
         gameOverAnimator.SetTrigger("QuitPressed");
-        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex-1));
+        StartCoroutine(LoadScene(0));
     }
 
     public void Retry() {

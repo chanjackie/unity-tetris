@@ -6,10 +6,21 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+
+    public InputField roomCodeInput;
     public Animator transition;
+    public GameObject playMenu;
+    public GameObject lobbyMenu;
 
     public void HostGame() {
-        print("HOST!");
+        StartCoroutine(LoadScene(SceneManager.GetActiveScene().buildIndex+2));
+    }
+
+    public void EnterLobby() {
+        if (roomCodeInput.text == "ABCD") {
+            playMenu.SetActive(false);
+            lobbyMenu.SetActive(true);
+        }
     }
 
     public void JoinGame() {

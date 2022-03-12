@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.Audio;
-using System.Collections;
-using TMPro;
 
 public class Board : MonoBehaviour
 {
@@ -52,6 +48,7 @@ public class Board : MonoBehaviour
         this.level = 0;
         this.score = 0;
         this.lastClear = Data.ClearType.NONE;
+        print("Pog?");
         for (int i=0; i<this.tetrominos.Length; i++) {
             this.tetrominos[i].Initialize();
         }
@@ -63,7 +60,6 @@ public class Board : MonoBehaviour
         this.hold.Initialize(tilemap);
         SpawnPiece();
     }
-
     public void SpawnPiece() {
         this.queue.ClearQueueTiles();
         TetrominoData data = this.queue.pieceQueue.Peek().data;
